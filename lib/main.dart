@@ -1,0 +1,118 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_auth/flutter_auth.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:kotd/firebase_options.dart';
+import 'package:kotd/helpers/authentication_factory.dart';
+import 'package:kotd/screens/knowledge_detail_screen.dart';
+import 'package:kotd/theming/dark_theme.dart';
+import 'package:kotd/theming/light_theme.dart';
+import 'package:provider/provider.dart';
+
+import 'package:workmanager/workmanager.dart';
+
+import 'helpers/rest_helper.dart';
+import 'models/knowledges.dart';
+import 'screens/home_screen.dart';
+import 'screens/knowledge_creation_screen.dart';
+
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+
+  print("Handling a background message: ${message.messageId}");
+}
+
+Future<void> firebaseMessagingForegroundHandler(RemoteMessage message) async {
+  // ToDo: if in creation screen, ask if the user wants to leave and then open the knowledge detail view.
+  print(message.notification?.body);
+}
+
+void callbackDispatcher() async {
+  Workmanager().executeTask((taskName, inputData) async {
+    print("Native called background task: $inputData");
+
+    try {
+      return await RestHelper.registerDevice() ?? true;
+    } catch (error) {
+      debugPrint(error.toString());
+    }
+    return false;
+  });
+}
+
+Future<void> main() async {
+  RestHelper.initialize();
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+
+  FirebaseMessaging.onMessage.listen(firebaseMessagingForegroundHandler);
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: kDebugMode);
+  Workmanager().registerPeriodicTask(
+    "kotd-register-device",
+    "register-device",
+    frequency: kDebugMode ? null : const Duration(days: 14),
+    constraints: Constraints(networkType: NetworkType.connected, requiresBatteryNotLow: true),
+  );
+
+  runApp(const KnowledgeOfTheDay());
+}
+
+class KnowledgeOfTheDay extends StatelessWidget {
+  const KnowledgeOfTheDay({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => AuthenticationFactory.create(),
+        ),
+        ChangeNotifierProxyProvider<FlutterAuth, Knowledges>(
+          create: (_) => Knowledges(null, []),
+          update: (ctx, auth, previousKnowledges) => Knowledges(
+            auth,
+            previousKnowledges?.items ?? [],
+          ),
+        ),
+      ],
+      child: Consumer<FlutterAuth>(
+        builder: (context, auth, _) => MaterialApp(
+          title: "Erkenntnis des Tages",
+          theme: LightTheme.get(),
+          darkTheme: DarkTheme.get(),
+          debugShowCheckedModeBanner: false,
+          supportedLocales: const [
+            Locale("de"),
+            Locale("en"),
+          ],
+          localizationsDelegates: const [
+            FormBuilderLocalizations.delegate,
+            ...GlobalMaterialLocalizations.delegates,
+          ],
+          home: const HomeScreen(),
+          routes: {
+            KnowledgeCreationScreen.routeName: (_) => const KnowledgeCreationScreen(),
+            KnowledgeDetailScreen.routeName: (_) => const KnowledgeDetailScreen(),
+          },
+        ),
+      ),
+    );
+  }
+}

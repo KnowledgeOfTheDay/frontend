@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "607005253117",
+    "project_id": "knowledgeoftheday-519d0",
+    "storage_bucket": "knowledgeoftheday-519d0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:607005253117:android:e32c5bf827a82957198d94",
+        "android_client_info": {
+          "package_name": "dev.curth.kotd"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "607005253117-1h2msid6el1spk8vhq2ucoq2gf73g49j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9AiNQS0wYsVXyJFayOVqLgHfoYOagqWA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "607005253117-1h2msid6el1spk8vhq2ucoq2gf73g49j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
