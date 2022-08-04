@@ -1,10 +1,11 @@
 import 'dart:async';
-
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_auth/flutter_auth.dart';
 import 'package:kotd/components/app_drawer.dart';
+import 'package:kotd/helpers/authentication_factory.dart';
 import 'package:kotd/screens/knowledge_detail_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -24,6 +25,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   StreamSubscription? _intentDataStreamSubscription;
+  bool shouldLoadList = true;
 
   Future<void> setupInteractedMessage() async {
     RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
@@ -41,12 +43,26 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _handleSharedData(String sharedData) {
+  Future<void> _handleSharedData(String sharedData) async {
+    setState(() {
+      shouldLoadList = false;
+    });
+
     if (sharedData.isNotEmpty) {
-      Provider.of<Knowledges>(context, listen: false).add(sharedData);
-      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-      // Navigator.pushNamed(context, KnowledgeCreationScreen.routeName, arguments: sharedData);
+      if (await Provider.of<Knowledges>(context, listen: false).add(sharedData, shouldNotify: false)) {
+        await SystemNavigator.pop();
+        // await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        // exit(0);
+      } else {
+        Navigator.pushNamed(context, KnowledgeCreationScreen.routeName, arguments: sharedData);
+      }
     }
+
+    ReceiveSharingIntent.reset();
+
+    setState(() {
+      shouldLoadList = true;
+    });
   }
 
   @override
@@ -60,6 +76,8 @@ class _HomeScreenState extends State<HomeScreen> {
       _handleSharedData(value);
     }, onError: (err) {
       print("getLinkStream error: $err");
+    }, onDone: () {
+      ReceiveSharingIntent.reset();
     });
 
     ReceiveSharingIntent.getInitialText().then((String? value) {
@@ -85,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: FutureBuilder(
           future: Provider.of<FlutterAuth>(context).loginRequired,
           builder: (ctx, snapshot) {
-            if (snapshot.hasData) {
+            if (snapshot.hasData && shouldLoadList) {
               return snapshot.data as bool ? const Login() : const KnowledgesList();
             }
             return const Center(

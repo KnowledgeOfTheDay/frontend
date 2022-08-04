@@ -32,8 +32,9 @@ dependencies:
     # path: ../../flutter_auth
     git:
       url: https://curth.dev/opensource/flutter_auth
-      ref: 7d09b0cf01eaa1c9f7271005326be9098774b6f9
+      ref: d63201bde9118034560c99a0b93576422cd46c96
   workmanager: ^0.5.0
+  awesome_notifications: ^0.6.21
 
 dev_dependencies:
   flutter_test:

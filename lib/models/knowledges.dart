@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/flutter_auth.dart';
 
@@ -35,7 +36,7 @@ class Knowledges with ChangeNotifier {
     return success;
   }
 
-  Future<bool> add(String link) async {
+  Future<bool> add(String link, {bool shouldNotify = true}) async {
     Knowledge? knowledge;
     final url = Uri.https(RestHelper.baseUrl, "/api/Knowledge");
 
@@ -44,17 +45,22 @@ class Knowledges with ChangeNotifier {
     };
 
     final response = await _auth!.post(url, body: jsonEncode({"url": link}), headers: headers);
-
+    bool success = false;
     if (response.statusCode == 200) {
-      final body = jsonDecode(response.body);
-      knowledge = Knowledge(body["id"], link, false);
-      _items.add(knowledge);
-      notifyListeners();
+      try {
+        final body = jsonDecode(response.body);
+        knowledge = Knowledge(body["id"], link, false);
+        _items.add(knowledge);
 
-      return true;
+        if (shouldNotify) notifyListeners();
+        success = true;
+      } catch (error) {
+        // AwesomeNotifications()
+        //     .createNotification(content: NotificationContent(id: 1, channelKey: "basic_channel", title: "an error occured.", body: error.toString()));
+      }
     }
 
-    return false;
+    return success;
   }
 
   Future<void> setIsUsed(String id) async {

@@ -28,7 +28,7 @@ class RestHelper {
 
   static Future<bool?> registerDevice() async {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-    final auth = AuthenticationFactory.create();
+    final auth = AuthenticationFactory.getOrCreate();
     final url = Uri.https(RestHelper.baseUrl, "/api/User");
 
     if (!await auth.loginRequired) {
