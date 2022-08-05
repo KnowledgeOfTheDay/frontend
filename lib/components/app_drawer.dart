@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/flutter_auth.dart';
+import 'package:kotd/components/app_settings.dart';
 import 'package:provider/provider.dart';
-
 import 'auth_button.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -52,9 +52,9 @@ class AppDrawer extends StatelessWidget {
                 ),
                 const Spacer(),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 7),
+                  padding: const EdgeInsets.only(bottom: 3),
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: () => Navigator.pushNamed(context, AppSettings.routeName),
                     icon: const Icon(
                       Icons.settings,
                       size: 30,

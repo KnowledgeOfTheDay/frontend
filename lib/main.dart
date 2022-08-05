@@ -5,7 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/flutter_auth.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:kotd/components/app_settings.dart';
 import 'package:kotd/firebase_options.dart';
 import 'package:kotd/helpers/authentication_factory.dart';
 import 'package:kotd/screens/knowledge_detail_screen.dart';
@@ -88,6 +90,8 @@ Future<void> main() async {
     constraints: Constraints(networkType: NetworkType.connected, requiresBatteryNotLow: true),
   );
 
+  await Settings.init();
+
   runApp(const KnowledgeOfTheDay());
 }
 
@@ -127,6 +131,7 @@ class KnowledgeOfTheDay extends StatelessWidget {
           routes: {
             KnowledgeCreationScreen.routeName: (_) => const KnowledgeCreationScreen(),
             KnowledgeDetailScreen.routeName: (_) => const KnowledgeDetailScreen(),
+            AppSettings.routeName: (_) => const AppSettings(),
           },
         ),
       ),

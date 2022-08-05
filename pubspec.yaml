@@ -35,6 +35,7 @@ dependencies:
       ref: d63201bde9118034560c99a0b93576422cd46c96
   workmanager: ^0.5.0
   awesome_notifications: ^0.6.21
+  flutter_settings_screens: ^0.3.3-null-safety+2
 
 dev_dependencies:
   flutter_test:
