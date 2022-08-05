@@ -1,11 +1,14 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_auth/flutter_auth.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:kotd/components/app_drawer.dart';
 import 'package:kotd/helpers/authentication_factory.dart';
+import 'package:kotd/helpers/settings_key.dart';
 import 'package:kotd/screens/knowledge_detail_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -49,10 +52,10 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     if (sharedData.isNotEmpty) {
-      if (await Provider.of<Knowledges>(context, listen: false).add(sharedData, shouldNotify: false)) {
-        await SystemNavigator.pop();
-        // await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-        // exit(0);
+      if (Settings.getValue<bool>(SettingsKey.useFastCreation, defaultValue: false)!) {
+        if (await Provider.of<Knowledges>(context, listen: false).add(sharedData, shouldNotify: false)) {
+          await SystemNavigator.pop();
+        }
       } else {
         Navigator.pushNamed(context, KnowledgeCreationScreen.routeName, arguments: sharedData);
       }
