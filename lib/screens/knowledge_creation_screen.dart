@@ -49,6 +49,7 @@ class _KnowledgeCreationScreenState extends State<KnowledgeCreationScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        backgroundColor: Theme.of(context).primaryColor,
         actions: [
           IconButton(onPressed: () => _formKey.currentState?.reset(), splashRadius: 25, icon: const Icon(Icons.restore)),
           IconButton(onPressed: () async => await _saveForm(context), splashRadius: 25, icon: const Icon(Icons.save)),

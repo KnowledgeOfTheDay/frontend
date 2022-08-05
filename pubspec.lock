@@ -29,6 +29,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.8.2"
+  awesome_notifications:
+    dependency: "direct main"
+    description:
+      name: awesome_notifications
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.21"
   boolean_selector:
     dependency: transitive
     description:
@@ -127,6 +134,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.1"
+  event:
+    dependency: transitive
+    description:
+      name: event
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.2"
   fake_async:
     dependency: transitive
     description:
@@ -213,8 +227,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "7d09b0cf01eaa1c9f7271005326be9098774b6f9"
-      resolved-ref: "7d09b0cf01eaa1c9f7271005326be9098774b6f9"
+      ref: d63201bde9118034560c99a0b93576422cd46c96
+      resolved-ref: d63201bde9118034560c99a0b93576422cd46c96
       url: "https://curth.dev/opensource/flutter_auth"
     source: git
     version: "0.0.1"
@@ -286,6 +300,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.2"
+  flutter_settings_screens:
+    dependency: "direct main"
+    description:
+      name: flutter_settings_screens
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.3-null-safety+2"
   flutter_slidable:
     dependency: "direct main"
     description:
@@ -443,6 +464,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.7"
+  pedantic:
+    dependency: transitive
+    description:
+      name: pedantic
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.11.1"
   petitparser:
     dependency: transitive
     description:

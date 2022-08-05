@@ -101,6 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Knowledge of the day"),
+        backgroundColor: Theme.of(context).primaryColor,
       ),
       drawer: const AppDrawer(),
       body: FutureBuilder(

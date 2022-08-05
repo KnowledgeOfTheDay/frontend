@@ -48,8 +48,8 @@ flutter_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/icon/appicon.png"
-  # adaptive_icon_foreground: "assets/icon/appicon.png"
-  # adaptive_icon_background: "#ff1b1b1b"
+  adaptive_icon_foreground: "assets/icon/appicon.png"
+  adaptive_icon_background: "#ff1b1b1b"
   remove_alpha_ios: true
 
 flutter:
