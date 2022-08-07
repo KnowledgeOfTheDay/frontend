@@ -4,7 +4,9 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
-import 'package:kotd/helpers/authentication_factory.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'authentication_factory.dart';
+import 'settings_key.dart';
 
 import '../firebase_options.dart';
 
@@ -20,9 +22,12 @@ class RestHelper {
 
   static void initialize() {
     if (kDebugMode) {
-      // baseUrl = "192.168.1.10:59440";
+      String? server = Settings.getValue(SettingsKey.server);
+      if (null != server && server.isNotEmpty) {
+        baseUrl = server;
+      }
+
       HttpOverrides.global = DevHttpOverrides();
-      print("debug");
     }
   }
 

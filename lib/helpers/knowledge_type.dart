@@ -1,0 +1,4 @@
+enum KnowledgeType {
+  url,
+  memo,
+}

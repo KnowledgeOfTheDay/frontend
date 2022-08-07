@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/flutter_auth.dart';
-import 'package:kotd/components/app_settings.dart';
+import 'app_settings.dart';
 import 'package:provider/provider.dart';
 import 'auth_button.dart';
 

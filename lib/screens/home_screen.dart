@@ -1,22 +1,22 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_auth/flutter_auth.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
-import 'package:kotd/components/app_drawer.dart';
-import 'package:kotd/helpers/authentication_factory.dart';
-import 'package:kotd/helpers/settings_key.dart';
-import 'package:kotd/screens/knowledge_detail_screen.dart';
+import '../components/app_drawer.dart';
+import '../components/knowledge_speed_dial.dart';
+import '../helpers/knowledge_type.dart';
+import '../helpers/modal_helper.dart';
+import '../helpers/settings_key.dart';
+import '../models/url_knowledge.dart';
+import 'knowledge_detail_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 import '../components/login.dart';
 import '../models/knowledges.dart';
-import 'knowledge_creation_screen.dart';
 import '../components/knowledges_list.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -53,11 +53,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (sharedData.isNotEmpty) {
       if (Settings.getValue<bool>(SettingsKey.useFastCreation, defaultValue: false)!) {
-        if (await Provider.of<Knowledges>(context, listen: false).add(sharedData, shouldNotify: false)) {
+        if (await Provider.of<Knowledges>(context, listen: false).addUrl(UrlKnowledge.local(sharedData), shouldNotify: false)) {
           await SystemNavigator.pop();
         }
       } else {
-        Navigator.pushNamed(context, KnowledgeCreationScreen.routeName, arguments: sharedData);
+        ModalHelper.showEditModal(context, KnowledgeType.url, initialValues: {"url": sharedData});
       }
     }
 
@@ -66,6 +66,11 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       shouldLoadList = true;
     });
+  }
+
+  Widget? getFloatingActionButton() {
+    return Provider.of<FlutterAuth>(context).isLoggedIn ? const KnowledgeSpeedDial() : null;
+    // return FloatingActionButton(child: const Icon(Icons.add), onPressed: () => ModalHelper.showEditModal(context, KnowledgeType.url));
   }
 
   @override
@@ -114,12 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: CircularProgressIndicator(),
             );
           }),
-      floatingActionButton: Provider.of<FlutterAuth>(context).isLoggedIn
-          ? FloatingActionButton(
-              onPressed: () => Navigator.pushNamed(context, KnowledgeCreationScreen.routeName),
-              child: const Icon(Icons.add),
-            )
-          : null,
+      floatingActionButton: getFloatingActionButton(),
     );
   }
 }

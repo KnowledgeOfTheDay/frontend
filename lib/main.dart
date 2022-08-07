@@ -7,12 +7,12 @@ import 'package:flutter_auth/flutter_auth.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:kotd/components/app_settings.dart';
-import 'package:kotd/firebase_options.dart';
-import 'package:kotd/helpers/authentication_factory.dart';
-import 'package:kotd/screens/knowledge_detail_screen.dart';
-import 'package:kotd/theming/dark_theme.dart';
-import 'package:kotd/theming/light_theme.dart';
+import 'components/app_settings.dart';
+import 'firebase_options.dart';
+import 'helpers/authentication_factory.dart';
+import 'screens/knowledge_detail_screen.dart';
+import 'theming/dark_theme.dart';
+import 'theming/light_theme.dart';
 import 'package:provider/provider.dart';
 
 import 'package:workmanager/workmanager.dart';
@@ -20,7 +20,6 @@ import 'package:workmanager/workmanager.dart';
 import 'helpers/rest_helper.dart';
 import 'models/knowledges.dart';
 import 'screens/home_screen.dart';
-import 'screens/knowledge_creation_screen.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -47,6 +46,7 @@ void callbackDispatcher() async {
 }
 
 Future<void> main() async {
+  await Settings.init();
   RestHelper.initialize();
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -86,11 +86,9 @@ Future<void> main() async {
   Workmanager().registerPeriodicTask(
     "kotd-register-device",
     "register-device",
-    frequency: kDebugMode ? null : const Duration(days: 14),
+    frequency: const Duration(days: 14),
     constraints: Constraints(networkType: NetworkType.connected, requiresBatteryNotLow: true),
   );
-
-  await Settings.init();
 
   runApp(const KnowledgeOfTheDay());
 }
@@ -129,7 +127,6 @@ class KnowledgeOfTheDay extends StatelessWidget {
           ],
           home: const HomeScreen(),
           routes: {
-            KnowledgeCreationScreen.routeName: (_) => const KnowledgeCreationScreen(),
             KnowledgeDetailScreen.routeName: (_) => const KnowledgeDetailScreen(),
             AppSettings.routeName: (_) => const AppSettings(),
           },

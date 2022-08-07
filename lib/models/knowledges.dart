@@ -4,9 +4,11 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/flutter_auth.dart';
 
-import 'package:kotd/helpers/rest_helper.dart';
+import '../helpers/rest_helper.dart';
+import 'url_knowledge.dart';
 
 import 'knowledge.dart';
+import 'memo_knowledge.dart';
 
 class Knowledges with ChangeNotifier {
   final FlutterAuth? _auth;
@@ -19,37 +21,36 @@ class Knowledges with ChangeNotifier {
 
   Knowledges(this._auth, this._items);
 
-  Future<bool> fetchKnowledges() async {
-    List<Knowledge> items = [];
-    final url = Uri.https(RestHelper.baseUrl, "/api/Knowledge");
-
-    final response = await _auth!.get(url);
-    bool success = 400 >= response.statusCode;
-    if (success && 200 == response.statusCode) {
-      final body = json.decode(response.body);
-      items = List<Knowledge>.from(body.map((model) => Knowledge.fromJson(model)));
-
-      _items = items;
-      notifyListeners();
+  Knowledge _mapToCorrectType(Map<String, dynamic> model) {
+    Knowledge value;
+    switch (model["type"]) {
+      case "url":
+        value = UrlKnowledge.fromJson(model);
+        break;
+      case "memo":
+        value = MemoKnowledge.fromJson(model);
+        break;
+      default:
+        value = Knowledge.fromJson(model);
+        break;
     }
 
-    return success;
+    return value;
   }
 
-  Future<bool> add(String link, {bool shouldNotify = true}) async {
-    Knowledge? knowledge;
-    final url = Uri.https(RestHelper.baseUrl, "/api/Knowledge");
-
+  Future<bool> _add(Knowledge knowledge, Uri url, {bool shouldNotify = true}) async {
     Map<String, String> headers = {
       "content-type": "application/json",
     };
 
-    final response = await _auth!.post(url, body: jsonEncode({"url": link}), headers: headers);
+    final response = await _auth!.post(url, body: jsonEncode(knowledge), headers: headers);
     bool success = false;
     if (response.statusCode == 200) {
       try {
         final body = jsonDecode(response.body);
-        knowledge = Knowledge(body["id"], link, false);
+        knowledge.id = body["id"];
+        knowledge.isUsed = false;
+
         _items.add(knowledge);
 
         if (shouldNotify) notifyListeners();
@@ -61,6 +62,35 @@ class Knowledges with ChangeNotifier {
     }
 
     return success;
+  }
+
+  Future<bool> fetchKnowledges() async {
+    List<Knowledge> items = [];
+    final url = Uri.https(RestHelper.baseUrl, "/api/Knowledge");
+
+    final response = await _auth!.get(url);
+    bool success = 400 >= response.statusCode;
+    if (success && 200 == response.statusCode) {
+      final body = json.decode(response.body);
+      items = List<Knowledge>.from(body.map((model) => _mapToCorrectType(model)));
+
+      _items = items;
+      notifyListeners();
+    }
+
+    return success;
+  }
+
+  Future<bool> addUrl(Knowledge knowledge, {bool shouldNotify = true}) async {
+    final url = Uri.https(RestHelper.baseUrl, "/api/Knowledge/url");
+
+    return await _add(knowledge, url, shouldNotify: shouldNotify);
+  }
+
+  Future<bool> addMemo(Knowledge knowledge, {bool shouldNotify = true}) async {
+    final url = Uri.https(RestHelper.baseUrl, "/api/Knowledge/memo");
+
+    return await _add(knowledge, url, shouldNotify: shouldNotify);
   }
 
   Future<void> setIsUsed(String id) async {

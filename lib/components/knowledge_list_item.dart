@@ -1,10 +1,12 @@
-import 'package:any_link_preview/any_link_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:kotd/models/knowledge.dart';
-import 'package:kotd/models/knowledges.dart';
+import 'preview/memo_preview.dart';
+import 'preview/url_preview.dart';
+import '../models/knowledge.dart';
+import '../models/knowledges.dart';
+import '../models/memo_knowledge.dart';
+import '../models/url_knowledge.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class KnowledgeListItem extends StatelessWidget {
   final Knowledge knowledge;
@@ -13,7 +15,7 @@ class KnowledgeListItem extends StatelessWidget {
 
   Future<void> _deleteItem(BuildContext context) async {
     try {
-      await Provider.of<Knowledges>(context, listen: false).delete(knowledge.id);
+      await Provider.of<Knowledges>(context, listen: false).delete(knowledge.id!);
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text(
@@ -25,7 +27,7 @@ class KnowledgeListItem extends StatelessWidget {
 
   Future<void> _setKnowledgeToUsed(BuildContext context) async {
     try {
-      await Provider.of<Knowledges>(context, listen: false).setIsUsed(knowledge.id);
+      await Provider.of<Knowledges>(context, listen: false).setIsUsed(knowledge.id!);
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text(
@@ -35,37 +37,15 @@ class KnowledgeListItem extends StatelessWidget {
     }
   }
 
-  Future<void> _launchInWebView(String url) async {
-    if (!await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication)) {
-      throw "Could not launch $url";
+  Widget generatePreview(Knowledge knowledge) {
+    switch (knowledge.runtimeType) {
+      case UrlKnowledge:
+        return UrlPreview(knowledge as UrlKnowledge);
+      case MemoKnowledge:
+        return MemoPreview(knowledge as MemoKnowledge);
+      default:
+        return const Center();
     }
-  }
-
-  Map<String, String> _applyHeaders(String url) {
-    Map<String, String> headers = {};
-    final uri = Uri.parse(url);
-    if (uri.authority.contains("reddit")) {
-      headers.putIfAbsent("User-Agent", () => "");
-    }
-
-    return headers;
-  }
-
-  Widget _buildLoadingErrorWidget(BuildContext context, String link) {
-    var height = ((MediaQuery.of(context).size.height) * 0.15);
-
-    return Container(
-      height: height,
-      width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(0),
-        color: Theme.of(context).colorScheme.onInverseSurface,
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        !AnyLinkPreview.isValidLink(link) ? 'Invalid Link' : 'Fetching data...',
-      ),
-    );
   }
 
   @override
@@ -111,20 +91,7 @@ class KnowledgeListItem extends StatelessWidget {
             //     )
             //   ],
             // ),
-            child: AnyLinkPreview(
-              borderRadius: 0,
-              bodyMaxLines: 3,
-              cache: const Duration(days: 7),
-              removeElevation: false,
-              backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-              urlLaunchMode: LaunchMode.externalNonBrowserApplication,
-              link: knowledge.url,
-              showMultimedia: true,
-              headers: _applyHeaders(knowledge.url),
-              displayDirection: UIDirection.uiDirectionHorizontal,
-              errorWidget: _buildLoadingErrorWidget(context, knowledge.url),
-              placeholderWidget: _buildLoadingErrorWidget(context, knowledge.url),
-            )),
+            child: generatePreview(knowledge)),
       ),
     );
   }
