@@ -9,7 +9,8 @@ class MemoKnowledge extends Knowledge {
     this.description,
     String? id,
     bool? isUsed,
-  ) : super(id, isUsed);
+    bool? hasWon,
+  ) : super(id, isUsed, hasWon);
 
   @override
   Map toJson() => {"title": title, "description": description, ...super.toJson()};
@@ -19,5 +20,6 @@ class MemoKnowledge extends Knowledge {
         data["description"],
         data["id"],
         data["isUsed"],
+        data["hasWon"],
       );
 }

@@ -93,21 +93,24 @@ class Knowledges with ChangeNotifier {
     return await _add(knowledge, url, shouldNotify: shouldNotify);
   }
 
-  Future<void> setIsUsed(String id) async {
+  Future<void> setIsUsed(String id, bool hasWon) async {
     final url = Uri.https(RestHelper.baseUrl, "/api/Knowledge/$id/done");
     Knowledge knowledge = _items.firstWhere((element) => element.id == id);
     final isUsed = knowledge.isUsed;
+    final currentWonState = knowledge.hasWon;
     knowledge.isUsed = true;
+    knowledge.hasWon = hasWon;
     notifyListeners();
 
     Map<String, String> headers = {
-      "content-type": "application/json",
+      "Content-Type": "application/json",
     };
 
-    final response = await _auth!.post(url, headers: headers);
+    final response = await _auth!.post(url, body: jsonEncode({"hasWon": hasWon}), headers: headers);
 
     if (response.statusCode >= 400) {
       knowledge.isUsed = isUsed;
+      knowledge.hasWon = currentWonState;
       notifyListeners();
       throw "Could not update knowledge.";
     }

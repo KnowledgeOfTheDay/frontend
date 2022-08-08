@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:kotd/helpers/modal_helper.dart';
 import 'preview/memo_preview.dart';
 import 'preview/url_preview.dart';
 import '../models/knowledge.dart';
@@ -8,16 +9,23 @@ import '../models/memo_knowledge.dart';
 import '../models/url_knowledge.dart';
 import 'package:provider/provider.dart';
 
-class KnowledgeListItem extends StatelessWidget {
+class KnowledgeListItem extends StatefulWidget {
   final Knowledge knowledge;
 
   const KnowledgeListItem(this.knowledge, {Key? key}) : super(key: key);
 
-  Future<void> _deleteItem(BuildContext context) async {
+  @override
+  State<KnowledgeListItem> createState() => _KnowledgeListItemState();
+}
+
+class _KnowledgeListItemState extends State<KnowledgeListItem> {
+  Future<void> _deleteItem() async {
+    final scaffold = ScaffoldMessenger.of(context);
     try {
-      await Provider.of<Knowledges>(context, listen: false).delete(knowledge.id!);
+      await Provider.of<Knowledges>(context, listen: false).delete(widget.knowledge.id!);
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      if (!mounted) return;
+      scaffold.showSnackBar(const SnackBar(
           content: Text(
         "Deleting failed!",
         textAlign: TextAlign.center,
@@ -25,9 +33,9 @@ class KnowledgeListItem extends StatelessWidget {
     }
   }
 
-  Future<void> _setKnowledgeToUsed(BuildContext context) async {
+  Future<void> _setKnowledgeToUsed(BuildContext context, bool hasWon) async {
     try {
-      await Provider.of<Knowledges>(context, listen: false).setIsUsed(knowledge.id!);
+      await Provider.of<Knowledges>(context, listen: false).setIsUsed(widget.knowledge.id!, hasWon);
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text(
@@ -59,20 +67,21 @@ class KnowledgeListItem extends StatelessWidget {
             startActionPane: ActionPane(
               motion: const BehindMotion(),
               dismissible: DismissiblePane(
-                onDismissed: () async => null != knowledge.isUsed ? await _setKnowledgeToUsed(context) : _deleteItem(context),
+                onDismissed: () async => {},
+                confirmDismiss: () async => await ModalHelper.showAskHasKnowledgeWonModal(context, _setKnowledgeToUsed) ?? false,
                 closeOnCancel: true,
               ),
               children: [
-                if (null != knowledge.isUsed)
+                if (null != widget.knowledge.isUsed)
                   SlidableAction(
-                    onPressed: (_) async => await _setKnowledgeToUsed(context),
+                    onPressed: (_) async => await ModalHelper.showAskHasKnowledgeWonModal(context, _setKnowledgeToUsed),
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Colors.white,
                     label: "Used",
                     icon: Icons.check,
                   ),
                 SlidableAction(
-                  onPressed: (_) async => await _deleteItem(context),
+                  onPressed: (_) async => await _deleteItem(),
                   backgroundColor: Theme.of(context).errorColor,
                   foregroundColor: Colors.white,
                   label: "Delete",
@@ -91,7 +100,7 @@ class KnowledgeListItem extends StatelessWidget {
             //     )
             //   ],
             // ),
-            child: generatePreview(knowledge)),
+            child: generatePreview(widget.knowledge)),
       ),
     );
   }
