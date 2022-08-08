@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
       shouldLoadList = false;
     });
 
-    if (sharedData.isNotEmpty) {
+    if (sharedData.isNotEmpty && Provider.of<FlutterAuth>(context, listen: false).isLoggedIn) {
       if (Settings.getValue<bool>(SettingsKey.useFastCreation, defaultValue: false)!) {
         if (await Provider.of<Knowledges>(context, listen: false).addUrl(UrlKnowledge.local(sharedData), shouldNotify: false)) {
           await SystemNavigator.pop();
@@ -69,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget? getFloatingActionButton() {
-    return Provider.of<FlutterAuth>(context).isLoggedIn ? const KnowledgeSpeedDial() : null;
+    return Provider.of<FlutterAuth>(context, listen: false).isLoggedIn ? const KnowledgeSpeedDial() : null;
     // return FloatingActionButton(child: const Icon(Icons.add), onPressed: () => ModalHelper.showEditModal(context, KnowledgeType.url));
   }
 

@@ -7,9 +7,10 @@ class UrlKnowledge extends Knowledge {
     this.url,
     String? id,
     bool? isUsed,
-  ) : super(id, isUsed);
+    bool? hasWon,
+  ) : super(id, isUsed, hasWon);
 
-  UrlKnowledge.local(this.url) : super(null, null);
+  UrlKnowledge.local(this.url) : super(null, null, null);
 
   @override
   Map toJson() => {"url": url, ...super.toJson()};
@@ -18,5 +19,6 @@ class UrlKnowledge extends Knowledge {
         data["url"],
         data["id"],
         data["isUsed"],
+        data["hasWon"],
       );
 }
