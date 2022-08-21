@@ -15,7 +15,7 @@ class AuthButton extends StatelessWidget {
           title,
           textAlign: TextAlign.center,
         ),
-        tileColor: Theme.of(context).colorScheme.primary,
+        tileColor: Theme.of(context).colorScheme.inversePrimary,
       ),
     );
   }
