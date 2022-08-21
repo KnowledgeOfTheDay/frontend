@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'knowledge_list_item.dart';
+import 'package:kotd/components/preview/preview_slidable.dart';
 import 'package:provider/provider.dart';
 
 import '../models/knowledges.dart';
-import 'knowledge_list_item.dart';
 
 class KnowledgesList extends StatefulWidget {
   const KnowledgesList({Key? key}) : super(key: key);
@@ -77,7 +76,7 @@ class _KnowledgesListState extends State<KnowledgesList> {
               itemCount: knowledges.length,
               itemBuilder: (_, i) => ChangeNotifierProvider.value(
                 value: knowledges[i],
-                child: KnowledgeListItem(knowledges[i]),
+                child: PreviewSlidable(knowledges[i]),
               ),
             ),
     );

@@ -24,7 +24,7 @@ class RestHelper {
     if (kDebugMode) {
       String? server = Settings.getValue(SettingsKey.server);
       if (null != server && server.isNotEmpty) {
-        baseUrl = server;
+        // baseUrl = server;
       }
 
       HttpOverrides.global = DevHttpOverrides();

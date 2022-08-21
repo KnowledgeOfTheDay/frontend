@@ -55,6 +55,7 @@ class AppDrawer extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 3),
                   child: IconButton(
                     onPressed: () => Navigator.pushNamed(context, AppSettings.routeName),
+                    splashColor: Colors.transparent,
                     icon: const Icon(
                       Icons.settings,
                       size: 30,
