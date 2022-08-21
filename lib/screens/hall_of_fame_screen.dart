@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class HallOfFameScreen extends StatefulWidget {
   static const String routeName = "hall-of-fame";
 
-  HallOfFameScreen({Key? key}) : super(key: key);
+  const HallOfFameScreen({Key? key}) : super(key: key);
 
   @override
   State<HallOfFameScreen> createState() => _HallOfFameScreenState();

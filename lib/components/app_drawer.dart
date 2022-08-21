@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/flutter_auth.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'app_settings.dart';
 import 'package:provider/provider.dart';
 import 'auth_button.dart';
@@ -8,13 +9,13 @@ class AppDrawer extends StatelessWidget {
   const AppDrawer({Key? key}) : super(key: key);
 
   Widget _getlogoutButton(BuildContext context) {
-    return AuthButton("logout", () {
+    return AuthButton(AppLocalizations.of(context)!.authLogout, () {
       Provider.of<FlutterAuth>(context, listen: false).logout();
     });
   }
 
   Widget _getLoginButton(BuildContext context) {
-    return AuthButton("login", () {
+    return AuthButton(AppLocalizations.of(context)!.authLogin, () {
       Provider.of<FlutterAuth>(context, listen: false).login();
       Navigator.of(context).pop();
     });
@@ -45,7 +46,7 @@ class AppDrawer extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: Text(
-                    "Knowledge of the Day",
+                    AppLocalizations.of(context)!.appTitle,
                     style: Theme.of(context).textTheme.titleLarge,
                     textAlign: TextAlign.start,
                   ),

@@ -5,6 +5,7 @@ import 'url_edit_form.dart';
 import '../../helpers/knowledge_type.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../models/knowledges.dart';
 import '../../models/memo_knowledge.dart';
@@ -51,9 +52,9 @@ class _ModalWithScrollState extends State<ModalWithScroll> {
         if (await saveKnowledge(data)) {
           Navigator.pop(context);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text(
-            "Adding failed!",
+            AppLocalizations.of(context)!.errorAddingFailed,
             textAlign: TextAlign.center,
           )));
         }
@@ -83,9 +84,9 @@ class _ModalWithScrollState extends State<ModalWithScroll> {
                     onPrimary: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   onPressed: () async => await _saveForm(context),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: Text("Save"),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Text(AppLocalizations.of(context)!.editSave),
                   ),
                 ),
               )

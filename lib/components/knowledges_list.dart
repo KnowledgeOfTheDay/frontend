@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kotd/components/preview/preview_slidable.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../models/knowledges.dart';
 
@@ -28,9 +29,9 @@ class _KnowledgesListState extends State<KnowledgesList> {
         });
 
         if (!success) {
-          messenger.showSnackBar(const SnackBar(
+          messenger.showSnackBar(SnackBar(
             content: Text(
-              "Failed to fetch data",
+              AppLocalizations.of(context)!.errorFailedFetchingData,
               textAlign: TextAlign.center,
             ),
             behavior: SnackBarBehavior.floating,
@@ -49,15 +50,16 @@ class _KnowledgesListState extends State<KnowledgesList> {
 
   Future<void> _refreshList() async {
     final messenger = ScaffoldMessenger.of(context);
+    final errorMessage = AppLocalizations.of(context)!.errorFailedFetchingData;
     bool success = await Provider.of<Knowledges>(context, listen: false).fetchKnowledges();
     setState(() {
       _isLoading = false;
     });
 
     if (!success) {
-      messenger.showSnackBar(const SnackBar(
+      messenger.showSnackBar(SnackBar(
         content: Text(
-          "Failed to fetch data",
+          errorMessage,
           textAlign: TextAlign.center,
         ),
       ));

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../helpers/settings_key.dart';
 
 class AppSettings extends StatefulWidget {
@@ -16,22 +17,22 @@ class _AppSettingsState extends State<AppSettings> {
   @override
   Widget build(BuildContext context) {
     return SettingsScreen(
-      title: "Application Settings",
+      title: AppLocalizations.of(context)!.settingsTitle,
       children: [
         // SettingsGroup(title: "General", children: [
         //   DropDownSettingsTile(
         //       title: "Displaymode", settingKey: SettingsKey.displayMode, selected: 0, values: const {0: "System", 1: "Light", 2: "Dark"})
         // ]),
-        SettingsGroup(title: "Experimental", children: [
+        SettingsGroup(title: AppLocalizations.of(context)!.settingsGroupExperimental, children: [
           SwitchSettingsTile(
-              title: "Use fast creation",
-              subtitle: "Decides wheather links should be created directly or not.",
+              title: AppLocalizations.of(context)!.settingsUseFastCreationTitle,
+              subtitle: AppLocalizations.of(context)!.settingsUseFastCreationDescription,
               settingKey: SettingsKey.useFastCreation),
         ]),
         if (kDebugMode)
-          SettingsGroup(title: "Debug", children: [
+          SettingsGroup(title: AppLocalizations.of(context)!.settingsGroupDebug, children: [
             TextInputSettingsTile(
-              title: "Server",
+              title: AppLocalizations.of(context)!.settingServerTitle,
               settingKey: SettingsKey.server,
               initialValue: "kotd.jonascurth.de",
             ),

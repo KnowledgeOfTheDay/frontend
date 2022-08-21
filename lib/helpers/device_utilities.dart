@@ -13,5 +13,7 @@ class DeviceUtilities {
       var androidDeviceInfo = await deviceInfo.androidInfo;
       return androidDeviceInfo.androidId; // unique ID on Android
     }
+
+    return null;
   }
 }

@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:any_link_preview/any_link_preview.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:kotd/components/details/knowledge_detail_list.dart';
 import 'package:kotd/components/details/knowledge_detail_list.dart';
 import 'package:kotd/helpers/modal_helper.dart';
 import 'package:kotd/models/knowledge.dart';
@@ -11,6 +9,7 @@ import 'package:kotd/models/memo_knowledge.dart';
 import 'package:kotd/models/url_knowledge.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../enums/knowledge_action.dart';
 import '../enums/win_state.dart';
@@ -67,9 +66,9 @@ class _KnowledgeDetailScreenState extends State<KnowledgeDetailScreen> {
           await Provider.of<Knowledges>(context, listen: false).setIsUsed(item.id!, WinState.yes == state);
         } catch (error) {
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text(
-            "Updating failed!",
+            AppLocalizations.of(context)!.errorUpdatingFailed,
             textAlign: TextAlign.center,
           )));
         }
@@ -114,24 +113,6 @@ class _KnowledgeDetailScreenState extends State<KnowledgeDetailScreen> {
       case KnowledgeAction.cancel:
         break;
     }
-
-    // await ModalHelper.showActionsModal(context, [
-    //   ListTile(
-    //     leading: const Icon(Icons.edit),
-    //     title: const Text("Edit"),
-    //     onTap: null,
-    //   ),
-    //   ListTile(
-    //     leading: const Icon(Icons.check),
-    //     title: const Text("Mark as used"),
-    //     onTap: () async => _setKnowledgeToUsed(),
-    //   ),
-    //   ListTile(
-    //     leading: const Icon(Icons.delete),
-    //     title: const Text("Delete"),
-    //     onTap: () async => _deleteItem(),
-    //   ),
-    // ]);
   }
 
   @override

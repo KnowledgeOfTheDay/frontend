@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 enum KnowledgeAction {
   edit,
@@ -21,16 +22,16 @@ extension KnowledgeActionExtension on KnowledgeAction {
     }
   }
 
-  String getTitle() {
+  String getTitle(BuildContext context) {
     switch (this) {
       case KnowledgeAction.edit:
-        return "Edit";
+        return AppLocalizations.of(context)!.knowledgeEdit;
       case KnowledgeAction.markAsUsed:
-        return "Mark as used";
+        return AppLocalizations.of(context)!.knowledgeMarkAsUsed;
       case KnowledgeAction.delete:
-        return "Delete";
+        return AppLocalizations.of(context)!.knowledgeDelete;
       case KnowledgeAction.cancel:
-        return "Cancel";
+        return AppLocalizations.of(context)!.dialogCancel;
     }
   }
 }

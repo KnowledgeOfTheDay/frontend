@@ -1,12 +1,14 @@
 import 'package:any_link_preview/any_link_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kotd/components/preview/preview_error_item.dart';
 import 'package:kotd/components/preview/preview_item.dart';
 import 'package:kotd/models/knowledge.dart';
 import 'package:kotd/models/url_knowledge.dart';
 import 'package:kotd/screens/knowledge_detail_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../enums/knowledge_action.dart';
 import '../../enums/win_state.dart';
@@ -43,12 +45,10 @@ class _PreviewSlidableState extends State<PreviewSlidable> {
   }
 
   String _getWellFormedUri(String url) {
-    try {
-      final uri = Uri.parse(url);
-      if (uri.host.isEmpty) {
-        url = "http://$url";
-      }
-    } catch (error) {}
+    final uri = Uri.tryParse(url);
+    if (null != uri && uri.host.isEmpty) {
+      url = "http://$url";
+    }
     return url;
   }
 
@@ -64,38 +64,29 @@ class _PreviewSlidableState extends State<PreviewSlidable> {
       Navigator.of(context).popUntil(ModalRoute.withName("/"));
     } catch (error) {
       if (!mounted) return;
-      scaffold.showSnackBar(const SnackBar(
+      scaffold.showSnackBar(SnackBar(
           content: Text(
-        "Deleting failed!",
+        AppLocalizations.of(context)!.errorDeletingFailed,
         textAlign: TextAlign.center,
       )));
     }
   }
 
-  Future<bool> _setKnowledgeToUsed(BuildContext context) async {
-    bool success = false;
-    final state = await ModalHelper.showAskHasKnowledgeWonModal(context);
-    if (!mounted) return false;
-    switch (state) {
-      case WinState.yes:
-      case WinState.no:
-        try {
-          await Provider.of<Knowledges>(context, listen: false).setIsUsed(widget.item.id!, WinState.yes == state);
-          success = true;
-        } catch (error) {
-          if (!mounted) return false;
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text(
-            "Updating failed!",
-            textAlign: TextAlign.center,
-          )));
-        }
-        break;
-      case WinState.cancel:
-        success = false;
-    }
+  Future<bool> _shouldSetKnowledgeToUsed(BuildContext context) async {
+    return await ModalHelper.showConfirmDialog(context, AppLocalizations.of(context)!.confirmationDialogTitle);
+  }
 
-    return success;
+  Future<void> _setKnowledgeToUsed(BuildContext context, bool hasWon) async {
+    try {
+      await Provider.of<Knowledges>(context, listen: false).setIsUsed(widget.item.id!, hasWon);
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+        AppLocalizations.of(context)!.errorUpdatingFailed,
+        textAlign: TextAlign.center,
+      )));
+    }
   }
 
   Future<void> _showAdditionalActionButtons(BuildContext ctx, {List<KnowledgeAction>? actions}) async {
@@ -103,7 +94,9 @@ class _PreviewSlidableState extends State<PreviewSlidable> {
     if (!mounted || null == action) return;
     switch (action) {
       case KnowledgeAction.markAsUsed:
-        await _setKnowledgeToUsed(ctx);
+        final result = await ModalHelper.showAskHasKnowledgeWonModal(context);
+        if (!mounted || result == WinState.cancel) return;
+        await _setKnowledgeToUsed(ctx, WinState.yes == result);
         break;
       case KnowledgeAction.delete:
         await _deleteItem(ctx);
@@ -164,21 +157,36 @@ class _PreviewSlidableState extends State<PreviewSlidable> {
           borderRadius: BorderRadius.circular(12),
           child: Slidable(
             key: UniqueKey(),
-            endActionPane: !hasError
+            startActionPane: !hasError
                 ? ActionPane(
-                    motion: const BehindMotion(),
+                    motion: const ScrollMotion(),
                     dismissible: DismissiblePane(
-                      onDismissed: () {},
-                      confirmDismiss: () async => await _setKnowledgeToUsed(context) ?? false,
+                      onDismissed: () async => await _setKnowledgeToUsed(context, false),
+                      confirmDismiss: () async => await _shouldSetKnowledgeToUsed(context),
                     ),
                     children: [
                       SlidableAction(
-                        onPressed: (_) async => await _setKnowledgeToUsed(context),
+                        onPressed: (_) async {
+                          final confirmation = await _shouldSetKnowledgeToUsed(context);
+                          if (!mounted || !confirmation) return;
+                          await _setKnowledgeToUsed(context, false);
+                        },
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
-                        label: "Used",
+                        label: AppLocalizations.of(context)!.knowledgeUsed,
                         icon: Icons.check,
-                      )
+                      ),
+                      SlidableAction(
+                        onPressed: (_) async {
+                          final confirmation = await _shouldSetKnowledgeToUsed(context);
+                          if (!mounted || !confirmation) return;
+                          await _setKnowledgeToUsed(context, true);
+                        },
+                        backgroundColor: Colors.amber,
+                        foregroundColor: Colors.white,
+                        label: AppLocalizations.of(context)!.knowledgeWon,
+                        icon: FontAwesomeIcons.crown,
+                      ),
                     ],
                   )
                 : null,
@@ -191,7 +199,7 @@ class _PreviewSlidableState extends State<PreviewSlidable> {
                     ? const Center(child: CircularProgressIndicator())
                     : hasError
                         ? PreviewErrorItem(
-                            "Url is invalid or has no metadata to show, maybe try to correct it or delete the item.",
+                            AppLocalizations.of(context)!.errorUrlInvalid,
                             url ?? "",
                             onLongPress: () => _showAdditionalActionButtons(context,
                                 actions: [KnowledgeAction.edit, KnowledgeAction.delete, KnowledgeAction.cancel]),
