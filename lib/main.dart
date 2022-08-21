@@ -1,4 +1,3 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -17,25 +16,22 @@ import 'package:provider/provider.dart';
 
 import 'package:workmanager/workmanager.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'helpers/rest_helper.dart';
 import 'models/knowledges.dart';
 import 'screens/home_screen.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-
-  print("Handling a background message: ${message.messageId}");
 }
 
 Future<void> firebaseMessagingForegroundHandler(RemoteMessage message) async {
   // ToDo: if in creation screen, ask if the user wants to leave and then open the knowledge detail view.
-  print(message.notification?.body);
 }
 
 void callbackDispatcher() async {
   Workmanager().executeTask((taskName, inputData) async {
-    print("Native called background task: $inputData");
-
     try {
       return await RestHelper.registerDevice() ?? true;
     } catch (error) {
@@ -53,7 +49,7 @@ Future<void> main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-  NotificationSettings settings = await messaging.requestPermission(
+  await messaging.requestPermission(
     alert: true,
     announcement: false,
     badge: true,
@@ -113,7 +109,7 @@ class KnowledgeOfTheDay extends StatelessWidget {
       ],
       child: Consumer<FlutterAuth>(
         builder: (context, auth, _) => MaterialApp(
-          title: "Erkenntnis des Tages",
+          onGenerateTitle: (ctx) => AppLocalizations.of(ctx)!.appTitle,
           theme: LightTheme.get(),
           darkTheme: DarkTheme.get(),
           debugShowCheckedModeBanner: false,
@@ -122,6 +118,7 @@ class KnowledgeOfTheDay extends StatelessWidget {
             Locale("en"),
           ],
           localizationsDelegates: const [
+            AppLocalizations.delegate,
             FormBuilderLocalizations.delegate,
             ...GlobalMaterialLocalizations.delegates,
           ],

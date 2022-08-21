@@ -15,6 +15,8 @@ import 'package:provider/provider.dart';
 
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import '../components/login.dart';
 import '../models/knowledges.dart';
 import '../components/knowledges_list.dart';
@@ -82,8 +84,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     _intentDataStreamSubscription = ReceiveSharingIntent.getTextStream().listen((String value) {
       _handleSharedData(value);
-    }, onError: (err) {
-      print("getLinkStream error: $err");
     }, onDone: () {
       ReceiveSharingIntent.reset();
     });
@@ -105,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Knowledge of the day"),
+        title: Text(AppLocalizations.of(context)!.appTitle),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       drawer: const AppDrawer(),

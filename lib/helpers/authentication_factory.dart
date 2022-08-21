@@ -10,7 +10,7 @@ class AuthenticationFactory {
           "kotd-app",
           "kotd://login-callback",
           "https://auth.curth.dev/realms/kotd",
-          FlutterSecureStorage(),
+          const FlutterSecureStorage(),
         );
     return instance;
   }
