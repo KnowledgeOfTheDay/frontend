@@ -28,7 +28,10 @@ class _ResizableImageState extends State<ResizableImage> {
           alignment: Alignment.topCenter,
           heightFactor: isExpanded ? 1.0 : .6,
           widthFactor: 1.0,
-          child: Image.network(widget.imageUrl),
+          child: Image.network(
+            widget.imageUrl,
+            alignment: Alignment.center,
+          ),
         ),
       ),
       Padding(

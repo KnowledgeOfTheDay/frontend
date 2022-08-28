@@ -1,17 +1,19 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:kotd/components/priority.dart';
 
 class PreviewItem extends StatelessWidget {
   final String title;
   final String description;
   final String? imageUrl;
+  final int priority;
   final Function() onTap;
   final Function() onLongPress;
   final bool showMultiMedia;
   final Color? bgColor;
 
-  const PreviewItem(this.title, this.description,
+  const PreviewItem(this.title, this.description, this.priority,
       {this.imageUrl, required this.onTap, required this.onLongPress, this.showMultiMedia = true, this.bgColor, Key? key})
       : super(key: key);
 
@@ -139,7 +141,8 @@ class PreviewItem extends StatelessWidget {
                     ],
                   ),
                 ),
-              )
+              ),
+              Priority(value: priority)
             ]),
           ),
         );

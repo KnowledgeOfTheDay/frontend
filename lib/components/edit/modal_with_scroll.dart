@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'memo_edit_form.dart';
-import 'url_edit_form.dart';
-import '../../helpers/knowledge_type.dart';
+import 'package:kotd/models/knowledge.dart';
+import 'edit_form.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../models/knowledges.dart';
-import '../../models/memo_knowledge.dart';
-import '../../models/url_knowledge.dart';
 
 class ModalWithScroll extends StatefulWidget {
-  final KnowledgeType type;
+  final String? id;
   final Map<String, dynamic> initialValues;
+  final bool isEdit;
 
-  const ModalWithScroll(this.type, {this.initialValues = const {}, Key? key}) : super(key: key);
+  const ModalWithScroll({this.id, this.initialValues = const {}, this.isEdit = false, Key? key}) : super(key: key);
 
   @override
   State<ModalWithScroll> createState() => _ModalWithScrollState();
@@ -24,32 +22,16 @@ class ModalWithScroll extends StatefulWidget {
 class _ModalWithScrollState extends State<ModalWithScroll> {
   final _formKey = GlobalKey<FormBuilderState>();
 
-  Widget getForm() {
-    switch (widget.type) {
-      case KnowledgeType.url:
-        return UrlEditForm(widget.initialValues);
-      case KnowledgeType.memo:
-        return MemoEditForm(widget.initialValues);
-    }
-  }
-
-  Future<bool> saveKnowledge(Map<String, dynamic> data) {
-    final provider = Provider.of<Knowledges>(context, listen: false);
-    switch (widget.type) {
-      case KnowledgeType.url:
-        return provider.addUrl(UrlKnowledge.fromJson(data));
-      case KnowledgeType.memo:
-        return provider.addMemo(MemoKnowledge.fromJson(data));
-    }
-  }
-
   Future<void> _saveForm(context) async {
     if (_formKey.currentState?.validate() ?? false) {
       _formKey.currentState?.save();
       final data = _formKey.currentState?.value;
-
       if (null != data) {
-        if (await saveKnowledge(data)) {
+        final provider = Provider.of<Knowledges>(context, listen: false);
+        bool success = !widget.isEdit && null == widget.id
+            ? await provider.add(Knowledge.fromJson(data))
+            : await provider.update(widget.id!, Knowledge.fromJson({...widget.initialValues, ...data}));
+        if (success) {
           Navigator.pop(context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -97,7 +79,7 @@ class _ModalWithScrollState extends State<ModalWithScroll> {
             child: ListView(
               shrinkWrap: true,
               controller: ModalScrollController.of(context),
-              children: [FormBuilder(key: _formKey, child: getForm())],
+              children: [FormBuilder(key: _formKey, child: EditForm(_formKey, widget.initialValues))],
             ),
           ),
         ),

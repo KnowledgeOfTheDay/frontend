@@ -6,10 +6,9 @@ import 'package:flutter_auth/flutter_auth.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import '../components/app_drawer.dart';
 import '../components/knowledge_speed_dial.dart';
-import '../helpers/knowledge_type.dart';
 import '../helpers/modal_helper.dart';
 import '../helpers/settings_key.dart';
-import '../models/url_knowledge.dart';
+import '../models/knowledge.dart';
 import 'knowledge_detail_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -55,11 +54,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (sharedData.isNotEmpty && Provider.of<FlutterAuth>(context, listen: false).isLoggedIn) {
       if (Settings.getValue<bool>(SettingsKey.useFastCreation, defaultValue: false)!) {
-        if (await Provider.of<Knowledges>(context, listen: false).addUrl(UrlKnowledge.local(sharedData), shouldNotify: false)) {
+        if (await Provider.of<Knowledges>(context, listen: false).add(Knowledge.local(sharedData), shouldNotify: false)) {
           await SystemNavigator.pop();
         }
       } else {
-        ModalHelper.showEditModal(context, KnowledgeType.url, initialValues: {"url": sharedData});
+        ModalHelper.showEditModal(context, initialValues: {"url": sharedData});
       }
     }
 
@@ -71,8 +70,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget? getFloatingActionButton() {
-    return Provider.of<FlutterAuth>(context, listen: false).isLoggedIn ? const KnowledgeSpeedDial() : null;
-    // return FloatingActionButton(child: const Icon(Icons.add), onPressed: () => ModalHelper.showEditModal(context, KnowledgeType.url));
+    return Provider.of<FlutterAuth>(context, listen: false).isLoggedIn
+        ? FloatingActionButton(child: const Icon(Icons.add), onPressed: () => ModalHelper.showEditModal(context))
+        : null;
   }
 
   @override
