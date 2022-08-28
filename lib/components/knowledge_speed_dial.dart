@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../helpers/knowledge_type.dart';
-
 import '../helpers/modal_helper.dart';
 
 class KnowledgeSpeedDial extends StatelessWidget {
@@ -13,7 +11,7 @@ class KnowledgeSpeedDial extends StatelessWidget {
     return SpeedDialChild(
       child: const Icon(Icons.link),
       label: AppLocalizations.of(context)!.knowledgeUrl,
-      onTap: () => ModalHelper.showEditModal(context, KnowledgeType.url),
+      onTap: () => ModalHelper.showEditModal(context),
     );
   }
 
@@ -21,7 +19,7 @@ class KnowledgeSpeedDial extends StatelessWidget {
     return SpeedDialChild(
       child: const Icon(Icons.note),
       label: AppLocalizations.of(context)!.knowledgeNote,
-      onTap: () => ModalHelper.showEditModal(context, KnowledgeType.memo),
+      onTap: () => ModalHelper.showEditModal(context),
     );
   }
 

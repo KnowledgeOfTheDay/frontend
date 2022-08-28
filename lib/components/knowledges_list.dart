@@ -68,7 +68,8 @@ class _KnowledgesListState extends State<KnowledgesList> {
 
   @override
   Widget build(BuildContext context) {
-    final knowledges = Provider.of<Knowledges>(context).items;
+    final knowledges = Provider.of<Knowledges>(context).items.where((element) => !element.isUsed).toList();
+    knowledges.sort((a, b) => b.priority.compareTo(a.priority));
 
     return RefreshIndicator(
       onRefresh: _refreshList,

@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:kotd/enums/knowledge_action.dart';
 import 'package:kotd/enums/win_state.dart';
-import 'knowledge_type.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../components/edit/modal_with_scroll.dart';
 
 class ModalHelper {
-  static void showEditModal(BuildContext context, KnowledgeType type, {Map<String, dynamic> initialValues = const {}}) {
-    showCupertinoModalBottomSheet(
+  static Future<void> showEditModal(BuildContext context, {String? id, Map<String, dynamic> initialValues = const {}, bool isEdit = false}) async {
+    await showCupertinoModalBottomSheet(
       context: context,
       expand: true,
       builder: (ctx) => ModalWithScroll(
-        type,
+        id: id,
         initialValues: initialValues,
+        isEdit: isEdit,
       ),
     );
   }

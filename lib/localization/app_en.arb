@@ -25,10 +25,14 @@
   "errorDeletingFailed": "Deleting failed!",
   "errorUpdatingFailed": "Updating failed!",
   "errorUrlInvalid": "The Url isn't valid or there a no metadata to collect.",
+  "errorTitleCannotBeEmpty": "The title cannot be empty as long as there's no url specified.",
   "actionDialogTitle": "What do you want to do?",
   "knowledgeWonDialogTitle": "Has this knowledge won?",
   "confirmationDialogTitle": "Willst du dies wirklich tun?",
   "dialogCancel": "cancel",
   "dialogYes": "Yes",
-  "dialogNo": "No"
+  "dialogNo": "No",
+  "priorityLow": "Low",
+  "priorityMedium": "Medium",
+  "priorityHigh": "High"
 }

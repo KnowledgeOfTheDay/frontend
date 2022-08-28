@@ -25,10 +25,14 @@
   "errorDeletingFailed": "Löschen fehlgeschlagen!",
   "errorUpdatingFailed": "Update fehlgeschlagen!",
   "errorUrlInvalid": "Die ist keine valide Url oder es wurden keine Metadaten gefunden.",
+  "errorTitleCannotBeEmpty": "Der Titel darf nicht leer sein, solange kein Link angegeben wurde.",
   "actionDialogTitle": "Was wollen Sie tun?",
   "knowledgeWonDialogTitle": "Hat diese Erkenntnis gewonnen?",
   "confirmationDialogTitle": "Willst du dies wirklich tun?",
   "dialogCancel": "Abbrechen",
   "dialogYes": "Ja",
-  "dialogNo": "Nein"
+  "dialogNo": "Nein",
+  "priorityLow": "Niedrig",
+  "priorityMedium": "Mittel",
+  "priorityHigh": "Hoch"
 }

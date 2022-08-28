@@ -1,12 +1,12 @@
+import 'dart:collection';
 import 'dart:io';
+import 'package:collection/collection.dart';
 
-import 'package:any_link_preview/any_link_preview.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kotd/components/details/knowledge_detail_list.dart';
 import 'package:kotd/helpers/modal_helper.dart';
 import 'package:kotd/models/knowledge.dart';
-import 'package:kotd/models/memo_knowledge.dart';
-import 'package:kotd/models/url_knowledge.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -25,8 +25,6 @@ class KnowledgeDetailScreen extends StatefulWidget {
 }
 
 class _KnowledgeDetailScreenState extends State<KnowledgeDetailScreen> {
-  late Knowledge item;
-
   void _launchUrl(String url) async {
     var uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
@@ -40,7 +38,12 @@ class _KnowledgeDetailScreenState extends State<KnowledgeDetailScreen> {
     }
   }
 
-  Future<void> _deleteItem() async {
+  void _openEditDialog(Knowledge item) async {
+    await ModalHelper.showEditModal(context, id: item.id, initialValues: item.toJson(), isEdit: true);
+    setState(() {});
+  }
+
+  Future<void> _deleteItem(Knowledge item) async {
     final scaffold = ScaffoldMessenger.of(context);
     try {
       await Provider.of<Knowledges>(context, listen: false).delete(item.id!);
@@ -56,7 +59,7 @@ class _KnowledgeDetailScreenState extends State<KnowledgeDetailScreen> {
     }
   }
 
-  Future<void> _setKnowledgeToUsed() async {
+  Future<void> _setKnowledgeToUsed(Knowledge item) async {
     final state = await ModalHelper.showAskHasKnowledgeWonModal(context);
     if (!mounted) return;
     switch (state) {
@@ -64,6 +67,7 @@ class _KnowledgeDetailScreenState extends State<KnowledgeDetailScreen> {
       case WinState.no:
         try {
           await Provider.of<Knowledges>(context, listen: false).setIsUsed(item.id!, WinState.yes == state);
+          setState(() {});
         } catch (error) {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -78,88 +82,57 @@ class _KnowledgeDetailScreenState extends State<KnowledgeDetailScreen> {
     }
   }
 
-  Future<Widget> _getDetails(Knowledge item) async {
-    switch (item.runtimeType) {
-      case UrlKnowledge:
-        final metadata = await AnyLinkPreview.getMetadata(link: (item as UrlKnowledge).url);
-        return KnowledgeDetailList(
-          title: metadata?.title,
-          description: metadata?.desc,
-          image: metadata?.image,
-          url: metadata?.url,
-        );
-      case MemoKnowledge:
-        final memo = item as MemoKnowledge;
-        return KnowledgeDetailList(
-          title: memo.title,
-          description: memo.description,
-        );
-      default:
-        return const Center(child: CircularProgressIndicator());
-    }
-  }
-
-  Future<void> _showAdditionalActionButtons() async {
-    final action = await ModalHelper.showActionsModal(context);
+  Future<void> _showAdditionalActionButtons(Knowledge item) async {
+    final action = await ModalHelper.showActionsModal(context, actions: item.isUsed ? [KnowledgeAction.delete, KnowledgeAction.cancel] : null);
     if (!mounted || null == action) return;
     switch (action) {
       case KnowledgeAction.markAsUsed:
-        await _setKnowledgeToUsed();
+        await _setKnowledgeToUsed(item);
         break;
       case KnowledgeAction.delete:
-        await _deleteItem();
+        await _deleteItem(item);
         break;
       case KnowledgeAction.edit:
+        _openEditDialog(item);
+        break;
       case KnowledgeAction.cancel:
         break;
     }
   }
 
   @override
-  void didChangeDependencies() {
-    item = ModalRoute.of(context)!.settings.arguments as Knowledge;
-    super.didChangeDependencies();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final id = ModalRoute.of(context)!.settings.arguments as String;
+    final item = Provider.of<Knowledges>(context, listen: false).items.firstWhereOrNull((element) => element.id == id);
+
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(
         actions: [
-          if (!(item.isUsed ?? false))
+          if (!(item?.isUsed ?? false))
             IconButton(
                 icon: const Icon(Icons.check),
                 highlightColor: Colors.transparent,
                 splashColor: Colors.transparent,
-                onPressed: () async => _setKnowledgeToUsed()),
-          if (item is UrlKnowledge)
+                onPressed: () async => _setKnowledgeToUsed(item!)),
+          if (null != item?.url)
             IconButton(
               icon: const Icon(Icons.open_in_new),
               highlightColor: Colors.transparent,
               hoverColor: Colors.transparent,
               splashColor: Colors.transparent,
               focusColor: Colors.transparent,
-              onPressed: () async => _launchUrl((item as UrlKnowledge).url),
+              onPressed: () async => _launchUrl(item!.url!),
             ),
-          IconButton(
-              icon: Icon(Platform.isAndroid ? Icons.more_vert : Icons.more_horiz),
-              highlightColor: Colors.transparent,
-              splashColor: Colors.transparent,
-              onPressed: _showAdditionalActionButtons),
+          if (null != item)
+            IconButton(
+                icon: Icon(Platform.isAndroid ? Icons.more_vert : Icons.more_horiz),
+                highlightColor: Colors.transparent,
+                splashColor: Colors.transparent,
+                onPressed: () => _showAdditionalActionButtons(item)),
         ],
       ),
-      body: FutureBuilder(
-        future: _getDetails(item),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return snapshot.data as Widget;
-          }
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-      ),
+      body: null == item ? const Center(child: CircularProgressIndicator()) : KnowledgeDetailList(item),
     );
   }
 }
