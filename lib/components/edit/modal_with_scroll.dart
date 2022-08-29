@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:kotd/models/knowledge.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'edit_form.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +24,7 @@ class ModalWithScroll extends StatefulWidget {
 
 class _ModalWithScrollState extends State<ModalWithScroll> {
   final _formKey = GlobalKey<FormBuilderState>();
+  final RoundedLoadingButtonController _btnController = RoundedLoadingButtonController();
 
   Future<void> _saveForm(context) async {
     if (_formKey.currentState?.validate() ?? false) {
@@ -32,6 +36,7 @@ class _ModalWithScrollState extends State<ModalWithScroll> {
             ? await provider.add(Knowledge.fromJson(data))
             : await provider.update(widget.id!, Knowledge.fromJson({...widget.initialValues, ...data}));
         if (success) {
+          _btnController.success();
           Navigator.pop(context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -39,8 +44,11 @@ class _ModalWithScrollState extends State<ModalWithScroll> {
             AppLocalizations.of(context)!.errorAddingFailed,
             textAlign: TextAlign.center,
           )));
+          _btnController.error();
         }
       }
+    } else {
+      _btnController.error();
     }
   }
 
@@ -60,11 +68,10 @@ class _ModalWithScrollState extends State<ModalWithScroll> {
             actions: [
               Padding(
                 padding: const EdgeInsets.only(top: 12, right: 12, bottom: 12),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).colorScheme.inversePrimary,
-                    onPrimary: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                child: RoundedLoadingButton(
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                  width: 100,
+                  controller: _btnController,
                   onPressed: () async => await _saveForm(context),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -79,7 +86,7 @@ class _ModalWithScrollState extends State<ModalWithScroll> {
             child: ListView(
               shrinkWrap: true,
               controller: ModalScrollController.of(context),
-              children: [FormBuilder(key: _formKey, child: EditForm(_formKey, widget.initialValues))],
+              children: [FormBuilder(key: _formKey, child: EditForm(_formKey, widget.initialValues, buttonController: _btnController))],
             ),
           ),
         ),

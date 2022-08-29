@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 class EditForm extends StatelessWidget {
   final Map<String, dynamic> defaults;
   final GlobalKey<FormBuilderState> _formKey;
-  const EditForm(this._formKey, this.defaults, {Key? key}) : super(key: key);
+  final RoundedLoadingButtonController? buttonController;
+
+  const EditForm(this._formKey, this.defaults, {this.buttonController, Key? key}) : super(key: key);
 
   String _priorityToText(int value, BuildContext context) {
     String result = value.toString();
@@ -54,6 +57,7 @@ class EditForm extends StatelessWidget {
               validator: FormBuilderValidators.compose([
                 FormBuilderValidators.url(),
               ]),
+              onChanged: (value) => buttonController?.reset(),
             ),
             const SizedBox(height: 10),
             FormBuilderTextField(
@@ -65,6 +69,7 @@ class EditForm extends StatelessWidget {
                 prefixIcon: const Icon(Icons.title),
               ),
               validator: (val) => _validateTitle(val, context),
+              onChanged: (value) => buttonController?.reset(),
             ),
             const SizedBox(height: 30),
             FormBuilderTextField(
@@ -77,21 +82,24 @@ class EditForm extends StatelessWidget {
               ),
               minLines: 1,
               maxLines: 5,
+              onChanged: (value) => buttonController?.reset(),
             ),
             const SizedBox(
               height: 10,
             ),
             FormBuilderDropdown(
-                name: "priority",
-                decoration: const InputDecoration(prefixIcon: Icon(Icons.star)),
-                initialValue: defaults["priority"] ?? 1,
-                items: [
-                  for (int i = 1; i <= 5; i++)
-                    DropdownMenuItem(
-                      value: i,
-                      child: Text(_priorityToText(i, context)),
-                    )
-                ])
+              name: "priority",
+              decoration: const InputDecoration(prefixIcon: Icon(Icons.star)),
+              initialValue: defaults["priority"] ?? 1,
+              items: [
+                for (int i = 1; i <= 5; i++)
+                  DropdownMenuItem(
+                    value: i,
+                    child: Text(_priorityToText(i, context)),
+                  )
+              ],
+              onChanged: (value) => buttonController?.reset(),
+            )
           ],
         ),
       ),
