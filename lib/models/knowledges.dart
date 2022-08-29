@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/flutter_auth.dart';
-import 'package:kotd/components/knowledges_list.dart';
 
 import '../helpers/rest_helper.dart';
 
