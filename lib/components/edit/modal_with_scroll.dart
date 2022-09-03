@@ -1,7 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:kotd/models/categories.dart';
+import 'package:kotd/models/category.dart';
 import 'package:kotd/models/knowledge.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'edit_form.dart';
@@ -26,17 +26,27 @@ class _ModalWithScrollState extends State<ModalWithScroll> {
   final _formKey = GlobalKey<FormBuilderState>();
   final RoundedLoadingButtonController _btnController = RoundedLoadingButtonController();
 
+  void _addMissingCategories(BuildContext context, List<Category> categories) {
+    final provider = Provider.of<Categories>(context, listen: false);
+    for (final category in categories) {
+      if (!provider.items.any((element) => element.name == category.name)) {
+        provider.add(category);
+      }
+    }
+  }
+
   Future<void> _saveForm(context) async {
     if (_formKey.currentState?.validate() ?? false) {
       _formKey.currentState?.save();
       final data = _formKey.currentState?.value;
       if (null != data) {
         final provider = Provider.of<Knowledges>(context, listen: false);
+
         bool success = !widget.isEdit && null == widget.id
             ? await provider.add(Knowledge.fromJson(data))
             : await provider.update(widget.id!, Knowledge.fromJson({...widget.initialValues, ...data}));
         if (success) {
-          _btnController.success();
+          // _addMissingCategories(context, data["categories"]);
           Navigator.pop(context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -50,6 +60,13 @@ class _ModalWithScrollState extends State<ModalWithScroll> {
     } else {
       _btnController.error();
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    Provider.of<Categories>(context, listen: false).fetchCategories().then((value) {});
+
+    super.didChangeDependencies();
   }
 
   @override
@@ -81,12 +98,10 @@ class _ModalWithScrollState extends State<ModalWithScroll> {
               )
             ],
           ),
-          body: SafeArea(
-            bottom: false,
-            child: ListView(
-              shrinkWrap: true,
-              controller: ModalScrollController.of(context),
-              children: [FormBuilder(key: _formKey, child: EditForm(_formKey, widget.initialValues, buttonController: _btnController))],
+          body: SingleChildScrollView(
+            child: SafeArea(
+              bottom: false,
+              child: FormBuilder(key: _formKey, child: EditForm(_formKey, widget.initialValues, buttonController: _btnController)),
             ),
           ),
         ),

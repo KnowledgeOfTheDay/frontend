@@ -1,5 +1,6 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+
+import 'category.dart';
 
 class Knowledge with ChangeNotifier {
   String? id;
@@ -10,7 +11,9 @@ class Knowledge with ChangeNotifier {
   int priority;
   bool isUsed;
   bool? hasWon;
-  DateTime? lastUpdate;
+  DateTime lastUpdate;
+  DateTime createdAt;
+  List<Category> categories;
 
   Knowledge(
     this.id, {
@@ -21,12 +24,17 @@ class Knowledge with ChangeNotifier {
     this.priority = 5,
     this.isUsed = false,
     this.hasWon,
-    this.lastUpdate,
+    required this.lastUpdate,
+    required this.createdAt,
+    this.categories = const [],
   });
 
   Knowledge.local(this.url)
       : priority = 5,
-        isUsed = false;
+        isUsed = false,
+        lastUpdate = DateTime.now(),
+        createdAt = DateTime.now(),
+        categories = const [];
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -37,16 +45,29 @@ class Knowledge with ChangeNotifier {
         "priority": priority,
         "isUsed": isUsed,
         "hasWon": hasWon,
-        "lastUpdate": lastUpdate
+        "lastUpdate": lastUpdate.toString(),
+        "createdAt": createdAt.toString(),
+        "categories": categories,
       };
 
-  static Knowledge fromJson(Map<String, dynamic> data) => Knowledge(data["id"],
-      url: data["url"],
-      title: data["title"],
-      description: data["description"],
-      imageUrl: data["imageUrl"],
-      priority: data["priority"] ?? 5,
-      isUsed: data["isUsed"] ?? false,
-      hasWon: data["hasWon"],
-      lastUpdate: data["lastUpdate"]);
+  static Knowledge fromJson(Map<String, dynamic> data) {
+    final map = data["categories"];
+    final List<Category> categories = null == map
+        ? []
+        : map is List<Category>
+            ? map
+            : List<Category>.from(map.map((model) => Category.fromJson(model)));
+
+    return Knowledge(data["id"],
+        url: data["url"],
+        title: data["title"],
+        description: data["description"],
+        imageUrl: data["imageUrl"],
+        priority: data["priority"] ?? 5,
+        isUsed: data["isUsed"] ?? false,
+        hasWon: data["hasWon"],
+        createdAt: null != data["createdAt"] ? DateTime.parse(data["createdAt"]) : DateTime(1970),
+        lastUpdate: null != data["lastUpdate"] ? DateTime.parse(data["lastUpdate"]) : DateTime(1970),
+        categories: categories);
+  }
 }

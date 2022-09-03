@@ -6,6 +6,8 @@ import 'package:flutter_auth/flutter_auth.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:kotd/models/categories.dart';
+import 'package:kotd/screens/filtered_list_screen.dart';
 import 'components/app_settings.dart';
 import 'firebase_options.dart';
 import 'helpers/authentication_factory.dart';
@@ -106,6 +108,13 @@ class KnowledgeOfTheDay extends StatelessWidget {
             previousKnowledges?.items ?? [],
           ),
         ),
+        ChangeNotifierProxyProvider<FlutterAuth, Categories>(
+          create: (_) => Categories(null, []),
+          update: (ctx, auth, previouseCategories) => Categories(
+            auth,
+            previouseCategories?.items ?? [],
+          ),
+        ),
       ],
       child: Consumer<FlutterAuth>(
         builder: (context, auth, _) => MaterialApp(
@@ -126,6 +135,7 @@ class KnowledgeOfTheDay extends StatelessWidget {
           routes: {
             KnowledgeDetailScreen.routeName: (_) => const KnowledgeDetailScreen(),
             AppSettings.routeName: (_) => const AppSettings(),
+            FilteredListScreen.routeName: (_) => const FilteredListScreen(),
           },
         ),
       ),

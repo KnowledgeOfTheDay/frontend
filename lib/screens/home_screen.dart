@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_auth/flutter_auth.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import '../components/app_drawer.dart';
-import '../components/knowledge_speed_dial.dart';
 import '../helpers/modal_helper.dart';
 import '../helpers/settings_key.dart';
 import '../models/knowledge.dart';
