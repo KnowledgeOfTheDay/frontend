@@ -1,9 +1,7 @@
-import 'dart:collection';
 import 'dart:io';
 import 'package:collection/collection.dart';
 
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kotd/components/details/knowledge_detail_list.dart';
 import 'package:kotd/helpers/modal_helper.dart';
 import 'package:kotd/models/knowledge.dart';

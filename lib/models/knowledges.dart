@@ -41,7 +41,6 @@ class Knowledges with ChangeNotifier {
         //     .createNotification(content: NotificationContent(id: 1, channelKey: "basic_channel", title: "an error occured.", body: error.toString()));
       }
     }
-
     return success;
   }
 
@@ -104,8 +103,9 @@ class Knowledges with ChangeNotifier {
     if (success && 200 == response.statusCode) {
       try {
         final body = json.decode(response.body);
-        _items.removeWhere((element) => element.id == id);
-        _items.add(Knowledge.fromJson(body));
+        final index = _items.indexWhere((element) => element.id == id);
+        _items.removeAt(index);
+        _items.insert(index, Knowledge.fromJson(body));
         notifyListeners();
         success = true;
       } catch (error) {}

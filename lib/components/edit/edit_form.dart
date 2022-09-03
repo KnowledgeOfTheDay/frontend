@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kotd/components/edit/input_chips.dart';
+import 'package:kotd/models/category.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 class EditForm extends StatelessWidget {
@@ -38,70 +40,69 @@ class EditForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 3),
-        child: Column(
-          children: [
-            FormBuilderTextField(
-              name: "url",
-              initialValue: defaults["url"] ?? "",
-              textInputAction: TextInputAction.next,
-              decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.editFieldUrl,
-                prefixIcon: const Icon(
-                  Icons.link,
-                ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 3),
+      child: Column(
+        children: [
+          FormBuilderTextField(
+            name: "url",
+            initialValue: defaults["url"] ?? "",
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(
+              hintText: AppLocalizations.of(context)!.editFieldUrl,
+              prefixIcon: const Icon(
+                Icons.link,
               ),
-              style: const TextStyle(fontSize: 18),
-              validator: FormBuilderValidators.compose([
-                FormBuilderValidators.url(),
-              ]),
-              onChanged: (value) => buttonController?.reset(),
             ),
-            const SizedBox(height: 10),
-            FormBuilderTextField(
-              name: "title",
-              initialValue: defaults["title"] ?? "",
-              textInputAction: TextInputAction.next,
-              decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.editFieldTitle,
-                prefixIcon: const Icon(Icons.title),
-              ),
-              validator: (val) => _validateTitle(val, context),
-              onChanged: (value) => buttonController?.reset(),
+            style: const TextStyle(fontSize: 18),
+            validator: FormBuilderValidators.compose([
+              FormBuilderValidators.url(),
+            ]),
+            onChanged: (value) => buttonController?.reset(),
+          ),
+          const SizedBox(height: 10),
+          FormBuilderTextField(
+            name: "title",
+            initialValue: defaults["title"] ?? "",
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(
+              hintText: AppLocalizations.of(context)!.editFieldTitle,
+              prefixIcon: const Icon(Icons.title),
             ),
-            const SizedBox(height: 30),
-            FormBuilderTextField(
-              name: "description",
-              initialValue: defaults["description"] ?? "",
-              textAlignVertical: TextAlignVertical.center,
-              decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.editFieldDescription,
-                prefixIcon: const Icon(Icons.description),
-              ),
-              minLines: 1,
-              maxLines: 5,
-              onChanged: (value) => buttonController?.reset(),
+            validator: (val) => _validateTitle(val, context),
+            onChanged: (value) => buttonController?.reset(),
+          ),
+          const SizedBox(height: 30),
+          FormBuilderTextField(
+            name: "description",
+            initialValue: defaults["description"] ?? "",
+            textAlignVertical: TextAlignVertical.center,
+            decoration: InputDecoration(
+              hintText: AppLocalizations.of(context)!.editFieldDescription,
+              prefixIcon: const Icon(Icons.description),
             ),
-            const SizedBox(
-              height: 10,
-            ),
-            FormBuilderDropdown(
-              name: "priority",
-              decoration: const InputDecoration(prefixIcon: Icon(Icons.star)),
-              initialValue: defaults["priority"] ?? 1,
-              items: [
-                for (int i = 1; i <= 5; i++)
-                  DropdownMenuItem(
-                    value: i,
-                    child: Text(_priorityToText(i, context)),
-                  )
-              ],
-              onChanged: (value) => buttonController?.reset(),
-            )
-          ],
-        ),
+            minLines: 1,
+            maxLines: 5,
+            onChanged: (value) => buttonController?.reset(),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          FormBuilderDropdown(
+            name: "priority",
+            decoration: const InputDecoration(prefixIcon: Icon(Icons.star)),
+            initialValue: defaults["priority"] ?? 1,
+            items: [
+              for (int i = 1; i <= 5; i++)
+                DropdownMenuItem(
+                  value: i,
+                  child: Text(_priorityToText(i, context)),
+                )
+            ],
+            onChanged: (value) => buttonController?.reset(),
+          ),
+          InputChips(defaults["categories"] as List<Category>? ?? []),
+        ],
       ),
     );
   }

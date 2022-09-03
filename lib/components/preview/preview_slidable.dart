@@ -29,7 +29,7 @@ class _PreviewSlidableState extends State<PreviewSlidable> {
   }
 
   void _openEditDialog() {
-    ModalHelper.showEditModal(context, id: widget.item.id, initialValues: widget.item.toJson(), isEdit: true);
+    ModalHelper.showEditModal(context, id: widget.item.id, initialValues: widget.item.toJson(), isEdit: true).then((value) => setState(() {}));
   }
 
   Future<void> _deleteItem(BuildContext context) async {
