@@ -15,10 +15,7 @@ class InputChips extends StatefulWidget {
 }
 
 class _InputChipsState extends State<InputChips> {
-  final categories = [
-    Category("asdf"),
-    Category("asdfg"),
-  ];
+  static GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
   Widget _buildSuggestion(BuildContext context, ChipsInputState<Category> state, Category category) {
     return ListTile(
@@ -59,6 +56,7 @@ class _InputChipsState extends State<InputChips> {
   Widget build(BuildContext context) {
     return FormBuilderChipsInput<Category>(
       name: "categories",
+      key: _formKey,
       maxChips: 5,
       initialValue: widget.initialValues,
       onChanged: (value) {},
