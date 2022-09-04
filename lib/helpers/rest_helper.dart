@@ -1,14 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
-import 'authentication_factory.dart';
 import 'settings_key.dart';
-
-import '../firebase_options.dart';
 
 class DevHttpOverrides extends HttpOverrides {
   @override
@@ -31,22 +26,22 @@ class RestHelper {
     }
   }
 
-  static Future<bool?> registerDevice() async {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-    final auth = AuthenticationFactory.getOrCreate();
-    final url = Uri.https(RestHelper.baseUrl, "/api/User");
+  // static Future<bool?> registerDevice() async {
+  //   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  //   final auth = AuthenticationFactory.getOrCreate();
+  //   final url = Uri.https(RestHelper.baseUrl, "/api/User");
 
-    if (!await auth.loginRequired) {
-      Map<String, String> headers = {
-        "content-type": "application/json",
-      };
+  //   if (!await auth.loginRequired) {
+  //     Map<String, String> headers = {
+  //       "content-type": "application/json",
+  //     };
 
-      final token = await FirebaseMessaging.instance.getToken();
-      final response = await auth.post(url, body: jsonEncode({"token": token.toString()}), headers: headers);
+  //     final token = await FirebaseMessaging.instance.getToken();
+  //     final response = await auth.post(url, body: jsonEncode({"token": token.toString()}), headers: headers);
 
-      return response.statusCode == 200;
-    }
+  //     return response.statusCode == 200;
+  //   }
 
-    return null;
-  }
+  //   return null;
+  // }
 }

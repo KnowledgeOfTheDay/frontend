@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_auth/flutter_auth.dart';
@@ -8,7 +7,6 @@ import '../components/app_drawer.dart';
 import '../helpers/modal_helper.dart';
 import '../helpers/settings_key.dart';
 import '../models/knowledge.dart';
-import 'knowledge_detail_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
@@ -29,22 +27,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   StreamSubscription? _intentDataStreamSubscription;
   bool shouldLoadList = true;
-
-  Future<void> setupInteractedMessage() async {
-    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-
-    if (null != initialMessage) {
-      _handleMessage(initialMessage);
-    }
-
-    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
-  }
-
-  void _handleMessage(RemoteMessage message) {
-    if (message.data['type'] == 'kotd') {
-      Navigator.pushNamed(context, KnowledgeDetailScreen.routeName, arguments: message);
-    }
-  }
 
   Future<void> _handleSharedData(String sharedData) async {
     setState(() {
@@ -77,9 +59,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-
-    setupInteractedMessage();
-    FirebaseMessaging.onMessage.listen(_handleMessage);
 
     _intentDataStreamSubscription = ReceiveSharingIntent.getTextStream().listen((String value) {
       _handleSharedData(value);
