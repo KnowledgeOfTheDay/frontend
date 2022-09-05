@@ -22,7 +22,7 @@ dependencies:
   http: ^0.13.4
   flutter_form_builder: ^7.2.0
   form_builder_validators: ^8.1.1
-  form_builder_extra_fields: ^8.3.0
+  # form_builder_extra_fields: ^8.3.0
   # firebase_core: ^1.17.1
   # firebase_messaging: ^11.4.1
   receive_sharing_intent: ^1.4.5
@@ -43,6 +43,9 @@ dependencies:
   font_awesome_flutter: ^10.1.0
   rounded_loading_button: ^2.1.0
   sentry_flutter: ^6.9.1
+  flutter_chips_input:
+    git:
+      url: https://github.com/JonasCurth/flutter_chips_input
 
 dev_dependencies:
   flutter_test:

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chips_input/flutter_chips_input.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kotd/components/edit/form_builder_chips_input.dart';
 import 'package:kotd/models/category.dart';
 import 'package:provider/provider.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
-
-import 'package:flutter_chips_input/src/chips_input.dart';
 
 import '../../models/categories.dart';
 
@@ -138,7 +137,6 @@ class EditForm extends StatelessWidget {
           ),
           FormBuilderChipsInput<Category>(
             name: "categories",
-            key: _formKey,
             maxChips: 5,
             initialValue: defaults["categories"] as List<Category>? ?? [],
             onChanged: (value) {},
