@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:kotd/components/edit/input_chips.dart';
 import 'package:kotd/models/category.dart';
+import 'package:provider/provider.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+
+import 'package:flutter_chips_input/src/chips_input.dart';
+
+import '../../models/categories.dart';
 
 class EditForm extends StatelessWidget {
   final Map<String, dynamic> defaults;
@@ -36,6 +41,41 @@ class EditForm extends StatelessWidget {
       return AppLocalizations.of(context)!.errorTitleCannotBeEmpty;
     }
     return null;
+  }
+
+  Widget _buildSuggestion(BuildContext context, ChipsInputState<Category> state, Category category) {
+    return ListTile(
+      key: ObjectKey(category),
+      tileColor: Theme.of(context).colorScheme.background.withOpacity(.5),
+      title: Text(category.name),
+      onTap: () => state.selectSuggestion(category),
+    );
+  }
+
+  InputChip _buildChip(BuildContext context, ChipsInputState<Category> state, Category category) {
+    return InputChip(
+      key: ObjectKey(category),
+      onDeleted: () => state.deleteChip(category),
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      label: Text(category.name),
+    );
+  }
+
+  List<Category> _findSuggestion(BuildContext context, String query) {
+    if (query.isNotEmpty) {
+      final lowercaseQuery = query.toLowerCase();
+      final provider = Provider.of<Categories>(context, listen: false);
+      final result = provider.items.where((category) {
+        return category.name.toLowerCase().contains(query.toLowerCase());
+      }).toList(growable: false)
+        ..sort((a, b) => a.name.toLowerCase().indexOf(lowercaseQuery).compareTo(b.name.toLowerCase().indexOf(lowercaseQuery)));
+
+      if (result.isNotEmpty) return result;
+
+      return [Category(query)];
+    } else {
+      return const [];
+    }
   }
 
   @override
@@ -96,7 +136,18 @@ class EditForm extends StatelessWidget {
             ],
             onChanged: (value) => buttonController?.reset(),
           ),
-          InputChips(defaults["categories"] as List<Category>? ?? []),
+          FormBuilderChipsInput<Category>(
+            name: "categories",
+            maxChips: 5,
+            initialValue: defaults["categories"] as List<Category>? ?? [],
+            onChanged: (value) {},
+            decoration: const InputDecoration(labelText: "Select a Categorie"),
+            chipBuilder: _buildChip,
+            findSuggestions: (query) async => _findSuggestion(context, query),
+            suggestionBuilder: _buildSuggestion,
+            allowChipEditing: true,
+            suggestionsBoxMaxHeight: 200,
+          ),
         ],
       ),
     );
