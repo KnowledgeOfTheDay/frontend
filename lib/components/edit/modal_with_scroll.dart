@@ -99,10 +99,7 @@ class _ModalWithScrollState extends State<ModalWithScroll> {
             ],
           ),
           body: SingleChildScrollView(
-            child: SafeArea(
-              bottom: false,
-              child: FormBuilder(key: _formKey, child: EditForm(_formKey, widget.initialValues, buttonController: _btnController)),
-            ),
+            child: FormBuilder(key: _formKey, child: EditForm(_formKey, widget.initialValues, buttonController: _btnController)),
           ),
         ),
       ),
