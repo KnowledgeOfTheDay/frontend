@@ -15,9 +15,8 @@ class InputChips extends StatefulWidget {
 }
 
 class _InputChipsState extends State<InputChips> {
-  static GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-
   Widget _buildSuggestion(BuildContext context, ChipsInputState<Category> state, Category category) {
+    print("Enter build suggestion");
     return ListTile(
       key: ObjectKey(category),
       tileColor: Theme.of(context).colorScheme.background.withOpacity(.5),
@@ -36,14 +35,16 @@ class _InputChipsState extends State<InputChips> {
   }
 
   List<Category> _findSuggestion(BuildContext context, String query) {
+    print("enter find suggestion");
     if (query.isNotEmpty) {
+      print("query ($query)not empty");
       final lowercaseQuery = query.toLowerCase();
       final provider = Provider.of<Categories>(context, listen: false);
       final result = provider.items.where((category) {
         return category.name.toLowerCase().contains(query.toLowerCase());
       }).toList(growable: false)
         ..sort((a, b) => a.name.toLowerCase().indexOf(lowercaseQuery).compareTo(b.name.toLowerCase().indexOf(lowercaseQuery)));
-
+      print("result: $result");
       if (result.isNotEmpty) return result;
 
       return [Category(query)];
@@ -54,9 +55,9 @@ class _InputChipsState extends State<InputChips> {
 
   @override
   Widget build(BuildContext context) {
+    print("enter build method of input_chips.dart");
     return FormBuilderChipsInput<Category>(
       name: "categories",
-      key: _formKey,
       maxChips: 5,
       initialValue: widget.initialValues,
       onChanged: (value) {},
