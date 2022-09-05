@@ -23,7 +23,7 @@ class ModalWithScroll extends StatefulWidget {
 }
 
 class _ModalWithScrollState extends State<ModalWithScroll> {
-  final _formKey = GlobalKey<FormBuilderState>();
+  static final _formKey = GlobalKey<FormBuilderState>();
   final RoundedLoadingButtonController _btnController = RoundedLoadingButtonController();
 
   void _addMissingCategories(BuildContext context, List<Category> categories) {
