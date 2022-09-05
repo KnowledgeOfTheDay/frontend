@@ -138,6 +138,7 @@ class EditForm extends StatelessWidget {
           ),
           FormBuilderChipsInput<Category>(
             name: "categories",
+            key: _formKey,
             maxChips: 5,
             initialValue: defaults["categories"] as List<Category>? ?? [],
             onChanged: (value) {},
