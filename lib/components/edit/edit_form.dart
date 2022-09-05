@@ -60,7 +60,6 @@ class EditForm extends StatelessWidget {
             ]),
             onChanged: (value) => buttonController?.reset(),
           ),
-          const SizedBox(height: 10),
           FormBuilderTextField(
             name: "title",
             initialValue: defaults["title"] ?? "",
@@ -72,7 +71,6 @@ class EditForm extends StatelessWidget {
             validator: (val) => _validateTitle(val, context),
             onChanged: (value) => buttonController?.reset(),
           ),
-          const SizedBox(height: 30),
           FormBuilderTextField(
             name: "description",
             initialValue: defaults["description"] ?? "",
@@ -84,9 +82,6 @@ class EditForm extends StatelessWidget {
             minLines: 1,
             maxLines: 5,
             onChanged: (value) => buttonController?.reset(),
-          ),
-          const SizedBox(
-            height: 10,
           ),
           FormBuilderDropdown(
             name: "priority",

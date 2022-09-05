@@ -98,9 +98,7 @@ class _ModalWithScrollState extends State<ModalWithScroll> {
               )
             ],
           ),
-          body: SingleChildScrollView(
-            child: FormBuilder(key: _formKey, child: EditForm(_formKey, widget.initialValues, buttonController: _btnController)),
-          ),
+          body: FormBuilder(key: _formKey, child: EditForm(_formKey, widget.initialValues, buttonController: _btnController)),
         ),
       ),
     );
